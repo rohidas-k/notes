@@ -504,17 +504,32 @@ React 'use-debounce' hook package
 </div>
 
 <div class="seperator2">
+<h2 class="title">WordPress debugging options: debug.log, error_log()</h2>
+<a href="https://learn.wordpress.org/lesson/the-built-in-wordpress-debugging-options/" target="_blank" rel="noopener noreferrer">Click here</a>
+<pre><code>
+    <b>Developers will often use this type of code in a special logging function, to be able to use both var_dump and error_log together.</b>
+    
+    function log_var_dump( $variable ) {
+        ob_start();
+        var_dump( $variable );
+        $output = ob_get_clean();
+        error_log( $output );
+    }   
+</code></pre>
+</div>
+
+<div class="seperator1">
 <h2 class="title">Installing Node.js using chocolatey & nvm in windows using Powershell.</h2>
 <a href="https://learn.wordpress.org/lesson/setting-up-your-block-development-environment/" target="_blank" rel="noopener noreferrer">Click here</a>
 </div>
 
-<div class="seperator1">
+<div class="seperator2">
 <h2 class="title">Ajax Tutorials</h2>
 <a href="https://www.w3schools.com/xml/ajax_intro.asp" target="_blank" rel="noopener noreferrer">Click here</a>
 </div>
 
 
-<div class="seperator2">
+<div class="seperator1">
 <h2 class="title">Adobe XD tutorials: UI UX - User Persona Imaginary Character</h2>
   UX/UI
 1. Qualitative research (quantitative data)
