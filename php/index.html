@@ -14,12 +14,15 @@ body {
 }
 
 .seperator {
-	border-radius: 10px;
-	padding: 0 20px 20px 20px;
-	padding-left: 50px;
-	margin:0;
-	white-space: pre;
-	margin-bottom: 1px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  padding: 0 20px 20px 20px;
+  padding-left: 50px;
+  margin:0;
+  white-space: pre;
+  margin-bottom: 5px;
+  border: 2px solid transparent; 
+  transition: background-color 1s ease, border 1s ease;
 }
 .seperator[data-variant="1"] {
 	background-color: #cee3e9;
@@ -28,12 +31,14 @@ body {
 	background-color:rgb(235 235 191);
 }
 .seperator.highlighted {
-	border: 4px solid #ff6b00 !important;
-	box-shadow: 0 0 35px rgba(255, 107, 0, 1), inset 0 0 20px rgba(255, 107, 0, 0.3) !important;
-	transition: all 0.3s ease;
+	/* border: 4px solid #ff6b00 !important; Space is already taken*/
+   border-color: #ff6b00 !important; 
+  /* outline: 2px solid blue; */
+	/* box-shadow: 0 0 35px rgba(255, 107, 0, 1), inset 0 0 20px rgba(255, 107, 0, 0.3) !important; */
+	transition: all 1s ease;
 	background-color: rgba(255, 107, 0, 0.05) !important;
   	position: relative;
-	margin-top: 50px !important;
+	/* margin-top: 50px !important; */
 }
 .title {
   margin-top: 0;
@@ -91,7 +96,16 @@ a[href*="youtube.com"] {
 #sidebar a:hover {
     color: white;
     background-color: rgb(145, 154, 89);
+  }
+
+
+/* This applies the persistent visual highlight using JavaScript */
+#sidebar a.active {
+    color: white !important;
+    background: #ff6b00 !important; /* Matches your main content orange highlight theme */
+    font-weight: bold;
 }
+
 #search {
     width: calc(100% - 20px);
     padding: 5px;
@@ -650,7 +664,10 @@ Color Hunt: <a href="https://colorhunt.co/">link</a>
         let id = h2.id;
         if (!id) {
             id = h2.textContent.trim().toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, '-');
-            h2.id = id;
+            
+            // ad id to its container instead
+            //h2.id = id;
+            h2.parentElement.id = id;
         }
         const li = document.createElement('li');
         const a = document.createElement('a');
@@ -689,7 +706,12 @@ Color Hunt: <a href="https://colorhunt.co/">link</a>
   // Add click handler to sidebar links
   const sidebarLinks = document.querySelectorAll('#sidebar a');
   sidebarLinks.forEach(link => {
-    link.addEventListener('click', function(e) {
+      link.classList.remove('active');
+      link.addEventListener('click', function(e) {
+      // Remove active class from all links
+      // Add active class to clicked link
+      sidebarLinks.forEach(l => {l.classList.remove('active')});
+      this.classList.add('active');
       const href = this.getAttribute('href');
       const targetId = href.substring(1);
       highlightSection(targetId);
