@@ -1,0 +1,550 @@
+from weasyprint import HTML
+
+html_content = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Technical Specification & Strategy Brief</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        
+        @page {
+            size: A4;
+            margin: 20mm 15mm;
+            @bottom-right {
+                content: "Page " counter(page) " of " counter(pages);
+                font-size: 8.5pt;
+                font-family: 'Segoe UI', Arial, sans-serif;
+                color: #64748b;
+            }
+            @bottom-left {
+                content: "ommall.in • Architecture Specification & Vendor Consultation Document";
+                font-size: 8.5pt;
+                font-family: 'Segoe UI', Arial, sans-serif;
+                color: #64748b;
+            }
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
+            font-size: 10pt;
+            line-height: 1.5;
+            color: #334155;
+            background-color: #ffffff;
+        }
+
+        .header-banner {
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 12px;
+            margin-bottom: 25px;
+        }
+
+        .header-title {
+            font-size: 18pt;
+            font-weight: bold;
+            color: #1e293b;
+            margin: 0 0 5px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .header-subtitle {
+            font-size: 11pt;
+            color: #475569;
+            margin: 0 0 15px 0;
+        }
+
+        /* Native table elements for reliable alignment */
+        .meta-table {
+            width: 100%;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .meta-cell {
+            padding: 8px 12px;
+            font-size: 9.5pt;
+            vertical-align: top;
+        }
+
+        .meta-label {
+            font-weight: bold;
+            color: #475569;
+            width: 18%;
+        }
+
+        .meta-value {
+            color: #1e293b;
+            width: 32%;
+        }
+
+        h2 {
+            font-size: 12pt;
+            color: #1e293b;
+            border-left: 4px solid #2563eb;
+            padding-left: 8px;
+            margin-top: 25px;
+            margin-bottom: 12px;
+            page-break-after: avoid;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .info-table th {
+            background-color: #1e293b;
+            color: #ffffff;
+            font-weight: bold;
+            padding: 8px 12px;
+            font-size: 9.5pt;
+            border: 1px solid #1e293b;
+            text-align: left;
+        }
+
+        .info-table td {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            font-size: 9.5pt;
+            vertical-align: top;
+        }
+
+        .info-table tr:nth-child(even) td {
+            background-color: #f8fafc;
+        }
+
+        .url-link {
+            color: #2563eb;
+            text-decoration: none;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 9pt;
+        }
+
+        /* Clean Layout Structural Cards */
+        .card-wrapper {
+            width: 100%;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+        }
+
+        .card-cell {
+            width: 50%;
+            vertical-align: top;
+        }
+
+        .summary-card {
+            background-color: #f1f5f9;
+            border-top: 3px solid #64748b;
+            padding: 12px;
+            margin-right: 8px;
+            border-radius: 0 0 4px 4px;
+            min-height: 110px;
+        }
+
+        .card-cell:last-child .summary-card {
+            margin-right: 0;
+            margin-left: 8px;
+        }
+
+        .summary-card-title {
+            font-weight: bold;
+            color: #334155;
+            margin-bottom: 6px;
+            font-size: 9.5pt;
+        }
+
+        /* Native Table for Dialogue Logs to prevent column shifting */
+        .chat-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .chat-table tr {
+            page-break-inside: avoid;
+        }
+
+        .chat-cell {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 9.5pt;
+            vertical-align: top;
+        }
+
+        .chat-meta {
+            width: 25%;
+            color: #64748b;
+            font-size: 8.5pt;
+            border-right: 1px solid #e2e8f0;
+        }
+
+        .chat-body {
+            width: 75%;
+            padding-left: 15px;
+            color: #334155;
+        }
+
+        .session-divider {
+            background-color: #f1f5f9;
+            padding: 6px 12px;
+            font-weight: bold;
+            color: #475569;
+            text-transform: uppercase;
+            font-size: 8.5pt;
+            letter-spacing: 0.5px;
+            border-top: 2px solid #cbd5e1;
+            border-bottom: 2px solid #cbd5e1;
+        }
+
+        .sender-tag {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .sender-rohidas {
+            color: #0369a1;
+        }
+
+        .sender-bagisto {
+            color: #b45309;
+        }
+        
+        .highlight-box {
+            background-color: #eff6ff;
+            border-left: 3px solid #2563eb;
+            padding: 10px 15px;
+            margin: 10px 0;
+            font-size: 9.5pt;
+        }
+
+        .highlight-box ul, .highlight-box ol {
+            margin: 5px 0 0 0;
+            padding-left: 20px;
+        }
+
+        .flow-card {
+            background-color: #fdf2f8;
+            border-left: 3px solid #db2777;
+            padding: 10px 15px;
+            margin: 10px 0;
+            font-size: 9.5pt;
+        }
+        
+        .flow-card ul {
+            margin: 4px 0;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body style="max-width:1080px; margin:0 auto;">
+
+    <div class="header-banner">
+        <h1 class="header-title">Technical Specification & Strategy Brief</h1>
+        <div class="header-subtitle">System Integration Analysis: Hyperlocal Delivery & Custom Logistics Routing</div>
+    </div>
+
+    <table class="meta-table">
+        <tr>
+            <td class="meta-cell meta-label">Project Instance:</td>
+            <td class="meta-cell meta-value">ommall.in (Book Store Network)</td>
+            <td class="meta-cell meta-label">Platform Core:</td>
+            <td class="meta-cell meta-value">Bagisto Quick Commerce</td>
+        </tr>
+        <tr>
+            <td class="meta-cell meta-label">Lead Engineer:</td>
+            <td class="meta-cell meta-value">Rohidas</td>
+            <td class="meta-cell meta-label">Integration Partner:</td>
+            <td class="meta-cell meta-value">Webkul / Bagisto Team (Sourav Pathak)</td>
+        </tr>
+        <tr>
+            <td class="meta-cell meta-label">Document Date:</td>
+            <td class="meta-cell meta-value">August 7, 2026</td>
+            <td class="meta-cell meta-label">Status:</td>
+            <td class="meta-cell meta-value">Requirements Gathering / Scoping</td>
+        </tr>
+    </table>
+
+    <h2>1. Custom Logistics Requirements Architecture</h2>
+    <p>
+        The objective for <strong>ommall.in</strong> is to implement a unified multi-warehouse distribution routing system across Karnataka, utilizing a customer's location input to dynamically allocate inventory sources and fulfillment rules.
+    </p>
+
+    <div class="highlight-box">
+        <strong>Target Operational Routing Logic:</strong>
+        <ol>
+            <li><strong>Global Visibility:</strong> Buyers can view and search the entire catalog of items irrespective of their current geometric location.</li>
+            <li><strong>Location Input:</strong> The checkout pipeline requires a PIN code or area coordinates prior to structural order validation.</li>
+            <li><strong>Fulfillment Path A (Hyperlocal Same-Day):</strong> If the destination PIN code falls within the designated delivery radius of a local partner bookstore (e.g., Udupi branch), the transaction routes to that branch for manual local dispatch.</li>
+            <li><strong>Fulfillment Path B (Standard Courier Fallback):</strong> If the target PIN code sits outside all local store zones, inventory defaults to the primary Bangalore hub, triggering automated labels via third-party courier APIs (e.g., Blue Dart).</li>
+        </ol>
+    </div>
+
+    <h2>2. Feature Delta Analysis: Out-of-the-Box vs. Custom</h2>
+    <table class="info-table">
+        <thead>
+            <tr>
+                <th style="width: 25%;">Platform Layer</th>
+                <th style="width: 37%;">Default Hyperlocal Profile (OOTB)</th>
+                <th style="width: 38%;">Required Custom Extensions Delta</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Catalog Visibility</strong></td>
+                <td>Restricted. Buyers strictly view items available in the inventory source mapped to their immediate radius.</td>
+                <td><strong>Global.</strong> Product visibility is unlinked from location entry until cart checkout rules parse routing.</td>
+            </tr>
+            <tr>
+                <td><strong>Fulfillment Rules</strong></td>
+                <td>Single-tier local warehouse hand-delivery or fallback message if outside coordinates.</td>
+                <td><strong>Dual-tier Routing Engine.</strong> Splits assignments dynamically between manual local drops and Blue Dart API calls.</td>
+            </tr>
+            <tr>
+                <td><strong>Cost Metrics</strong></td>
+                <td>Included in standard $199 USD baseline Quick Commerce bundle package.</td>
+                <td>Requires separate custom customization quote from the engineering partner.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table class="card-wrapper">
+        <tr>
+            <td class="card-cell">
+                <div class="summary-card" style="border-top-color: #2563eb;">
+                    <div class="summary-card-title">Core Business Architecture</div>
+                    Individually managed corporate inventory model with physical distribution across multiple regional center storefronts (e.g., Udupi, Bengaluru). Requires hyperlocal distance routing, automatic merchant notification matching, and point-of-sale radius mapping.
+                </div>
+            </td>
+            <td class="card-cell">
+                <div class="summary-card" style="border-top-color: #10b981;">
+                    <div class="summary-card-title">Scalability & Stack Performance</div>
+                    The target system must seamlessly catalog up to 100,000 distinct product titles. The baseline platform architecture uses a <strong>Laravel (PHP)</strong> backend engine paired with <strong>Vue.js, Tailwind CSS</strong>, and native Blade views, tested to manage over 10 million SKUs.
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <div style="page-break-after: always;"></div>
+
+    <h2>3. Chronological Consultation Registry</h2>
+    <table class="chat-table">
+        <tbody>
+            <tr>
+                <td colspan="2" class="session-divider">Session I: Architecture Scaling & Discovery (Morning Sequence)</td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-bagisto">Bagisto Team</span>11:04 AM</td>
+                <td class="chat-cell chat-body">Hi Rohidas. Greetings from Bagisto team! We received your request to review the Quick Commerce engine. You can inspect the storefront framework directly via this dynamic endpoint: <br><a class="url-link" href="https://demo.bagisto.com/commercia-retail/">https://demo.bagisto.com/commercia-retail/</a></td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-rohidas">Rohidas</span>11:05 AM</td>
+                <td class="chat-cell chat-body">Hi. Ok. Thank you for the quick response. I would like to see your quick commerce admin panel. Let me check it out.</td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-bagisto">Bagisto Team</span>11:06 AM</td>
+                <td class="chat-cell chat-body">Yes, it is accessible inside the sandbox instance. Here is your direct authentication path to evaluate layout variables: <br><a class="url-link" href="https://demo.bagisto.com/commercia-retail-24052039827a82/admin/login">https://demo.bagisto.com/commercia-retail-24052039827a82/admin/login</a></td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-rohidas">Rohidas</span>11:08 AM</td>
+                <td class="chat-cell chat-body">Yes. I have already seen the B2C admin panel. I want to view the 'Quick Commerce' panel or configuration options specifically.</td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-bagisto">Bagisto Team</span>11:12 AM</td>
+                <td class="chat-cell chat-body">Under system configuration, select the <strong>Hyperlocal</strong> module parameters. From this layout interface, administrators input global Google API access tokens alongside an active service Radius setting. At the front-end, the consumer sets their destination; if their node intersects your coverage radius, regional products resolve automatically.</td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-rohidas">Rohidas</span>11:13 AM</td>
+                <td class="chat-cell chat-body">I saw it yesterday. I have enabled the hyperlocal settings via the configuration menu. This is for the client project <strong>ommall.in</strong>. They require quick commerce delivery loops tied to PIN-code structures, using a PHP ecosystem.</td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-bagisto">Bagisto Team</span>11:19 AM</td>
+                <td class="chat-cell chat-body">Understood. Because your client possesses particular localized needs, our baseline package serves as an ideal structural starting blueprint. Since full source rights are unlocked upon purchase, your team can add modules independently, or you can outsource development directly to our team.</td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-rohidas">Rohidas</span>11:21 AM</td>
+                <td class="chat-cell chat-body">Is the entire project open source? His store is located in Bengaluru. He intends to stock his books in shops across Karnataka and sell them through quick-commerce platforms.</td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-bagisto">Bagisto Team</span>11:23 AM</td>
+                <td class="chat-cell chat-body">Yes, full codebase ownership is provided. This framework handles your distribution parameters cleanly: administrators establish multiple discrete Categories, items, and standalone Inventory Sources in the control panel and attach separate service ranges to them. Customers check coordinates on the front-end, select listed regional entities, and check out using pre-integrated checkout gateways. The product engine is documented extensively here: <a class="url-link" href="https://webkul.com/blog/bagisto-quick-commerce-documentation/">https://webkul.com/blog/bagisto-quick-commerce-documentation/</a></td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-rohidas">Rohidas</span>11:24 AM</td>
+                <td class="chat-cell chat-body">Okay, which solution should I buy? Is it enough if I buy only quick commerce for my need? Its price is $199, excluding GST, right? Also, I am unable to select my location in the Quick Commerce front end store. I can type, but the location marker is not appearing.</td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-bagisto">Bagisto Team</span>11:37 AM</td>
+                <td class="chat-cell chat-body">The solution requires standard production hosting to go live; you can configure self-managed servers or purchase our dedicated cloud tiers. Regarding your location selection issue: <strong>The geographic map markers will initialize correctly once valid, active Google Maps API keys are linked inside the administration portal.</strong></td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-rohidas">Rohidas</span>11:56 AM</td>
+                <td class="chat-cell chat-body">I have basic to intermediate knowledge of Laravel, and I use React and Tailwind on my client front-end. Can we comfortably scale this database framework to hold up to 100,000 book variants?</td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-bagisto">Bagisto Team</span>12:03 PM</td>
+                <td class="chat-cell chat-body">Easily. Our database core is stress-tested against 10 million+ distinct SKUs without indexing latency. Just verify your infrastructure meets the framework specs at: <a class="url-link" href="https://devdocs.bagisto.com/getting-started/before-you-start.html">https://devdocs.bagisto.com/getting-started/before-you-start.html</a>. Custom developer allocations carry a standard rate of <strong>2,500 INR / hour</strong> or a continuous monthly flat subscription of <strong>300,000 INR</strong>.</td>
+            </tr>
+
+            <tr>
+                <td colspan="2" class="session-divider">Session II: Logistics Engineering & Custom Scoping (Afternoon Sequence)</td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-rohidas">Rohidas</span>03:23 PM</td>
+                <td class="chat-cell chat-body">
+                    Hi, I need to know if a specific feature is available or how I can set it up. I want to know if Bagisto can handle this distribution logic out-of-the-box:
+                    <ol style="margin: 5px 0 0 0; padding-left: 15px;">
+                        <li>I have multiple book stores (stock points) across Karnataka.</li>
+                        <li>My main warehouse center is in Bangalore.</li>
+                        <li>When a buyer visits the site, they must enter their Pincode.</li>
+                        <li>If their Pincode matches near any local store, the order triggers same-day manual delivery from that local stock point.</li>
+                        <li>If their Pincode does not sit near a local branch, the system falls back to the main Bangalore store to ship via normal courier.</li>
+                    </ol>
+                    Is this available built-in, or is there an add-on module I can buy?
+                </td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-bagisto">Bagisto Team</span>03:45 PM</td>
+                <td class="chat-cell chat-body">Hi</td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-rohidas">Rohidas</span>03:46 PM</td>
+                <td class="chat-cell chat-body">hi</td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-rohidas">Rohidas</span>03:49 PM</td>
+                <td class="chat-cell chat-body">
+                    Hi, I need to know if a specific feature is available or how I can set it up. I want to know if Bagisto can do this: I have multiple book stores (stock points) across Karnataka. My main store is in Bangalore. When a buyer visits the site, they must enter their Pincode. If their Pincode is near any of my local stores, the book should be delivered same-day from that local store. If their Pincode is not near any local store, the book will be sent via normal courier from my main Bangalore store.
+                    <br><br>
+                    Is this Pincode-based stock and delivery routing feature available out-of-the-box in the Bagisto Quick Commerce Platform? If it is not built-in, can you please tell me how I can handle this? Is there an extension or module I can buy for this? Hello, is this Sourav Pathak? Could you please confirm this?
+                </td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-bagisto">Bagisto Team</span>03:51 PM</td>
+                <td class="chat-cell chat-body">Yes we are checking it and will update you</td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-rohidas">Rohidas</span>03:52 PM</td>
+                <td class="chat-cell chat-body">Okay</td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-bagisto">Bagisto Team</span>04:33 PM</td>
+                <td class="chat-cell chat-body">How you are looking to do the delivery? Is it manual or would you be using any third party courier services? Cuz then we need to integrate the API for the same.</td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-rohidas">Rohidas</span>04:34 PM</td>
+                <td class="chat-cell chat-body">Both types. Ex: Bluedart.</td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-bagisto">Bagisto Team</span>05:17 PM</td>
+                <td class="chat-cell chat-body">And how you will define which one you will deliver manually and which one by Bluedart, is it like local one will be done by you and the one outside the radius will be done by Bluedart?</td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-rohidas">Rohidas</span>05:19 PM</td>
+                <td class="chat-cell chat-body">Yes. Hand-delivered: local distribution. Outside the radius will be done by Bluedart.</td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-bagisto">Bagisto Team</span>07:22 PM</td>
+                <td class="chat-cell chat-body">
+                    Hi Rohidas, the shipping part is something that will be custom developed as it requires integration.
+                    <br><br>
+                    Right now the default flow is:
+                    <div class="flow-card">
+                        <strong>A. Setup (Done Once by Admin)</strong>
+                            Add each physical bookstore as an Inventory Source (stock point) in Bagisto admin.
+                            <li>Setup each store's location (latitude/longitude) and its stock.</li>
+                            <li>Mark your Bangalore store as the main store.</li>
+                            <li>Set the service radius (e.g. 10 km) in Configuration &rarr; Hyperlocal &rarr; Settings.</li>
+                        <strong style="display:block; margin-top:6px;">B. Buyer Places an Order (Storefront)</strong>
+                        <ul>
+                            <li>Buyer opens the website.</li>
+                            <li>Buyer sets their location (area/pincode, GPS, or saved address).</li>
+                            <li>System finds the nearest local store within the service radius.</li>
+                            <li>Books in stock at that store are shown.</li>
+                            <li>Buyer adds books to cart and checks out.</li>
+                            <li>Order is placed successfully.</li>
+                        </ul>
+                    </div>
+                    Right now this is the default hyperlocal functionality in quick commerce. In your case, customer can see any book irrespective of his location right?
+                </td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-rohidas">Rohidas</span>07:24 PM</td>
+                <td class="chat-cell chat-body">Yes. This new implementation will be provided with the q commerce purchase bundle?</td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-bagisto">Bagisto Team</span>07:24 PM</td>
+                <td class="chat-cell chat-body">There will be separate cost for that as its a new customisation.</td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-rohidas">Rohidas</span>07:26 PM</td>
+                <td class="chat-cell chat-body">Okay. How much does this cost?</td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-bagisto">Bagisto Team</span>07:30 PM</td>
+                <td class="chat-cell chat-body">Let me create one revised flow and send to you.</td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-rohidas">Rohidas</span>07:34 PM</td>
+                <td class="chat-cell chat-body">Okay. I just needed to clarify Bagisto's features before moving forward. I will contact you to buy the product once development starts.</td>
+            </tr>
+
+            <tr>
+                <td class="chat-cell chat-meta"><span class="sender-tag sender-rohidas">Rohidas</span>07:37 PM</td>
+                <td class="chat-cell chat-body">Understood. Give the custom development cost estimation.</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>
+"""
+
+with open("bagisto_fixed_alignment.html", "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+HTML("bagisto_fixed_alignment.html").write_pdf("bagisto_fixed_alignment.pdf")
+print("Perfect alignment PDF built successfully!")
