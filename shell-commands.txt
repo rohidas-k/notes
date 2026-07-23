@@ -1,0 +1,8 @@
+Rename all files in a folder
+****************************
+Get-ChildItem -File | ForEach-Object -Begin { $count = 1 } -Process { Rename-Item $_.FullName -NewName ("beach{0}{1}" -f $count++, $_.Extension) }
+
+To see what the command will do without actually changing any files, add -WhatIf to the end of the command:
+Get-ChildItem -File | ForEach-Object -Begin { $count = 1 } -Process { Rename-Item $_.FullName -NewName ("beach{0}{1}" -f $count++, $_.Extension) -WhatIf }
+
+
