@@ -766,8 +766,13 @@ You can start developing by editing the files inside the **app** directory. This
 <div class="seperator">
 <h2 class="title">A Windows 10 PowerShell command to list all applications currently installed on the C: and G: drives. </h2>
 <pre><code>
+<b># This command retrieves application names along with their installation paths.</b>
 & { $u = 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*','HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*','HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*'; $reg = Get-ItemProperty $u -EA SilentlyContinue | Where-Object { $_.DisplayName -and $_.SystemComponent -ne 1 -and $_.ParentKeyName -eq $null } | Select-Object @{N='Name';E={$_.DisplayName}}, @{N='Path';E={$_.InstallLocation}}; $store = Get-AppxPackage -AllUsers -EA SilentlyContinue | Where-Object { -not $_.IsFramework -and $_.NonRemovable -ne $true -and $_.SignatureKind -eq 'Store' } | Select-Object @{N='Name';E={$_.Name}}, @{N='Path';E={$_.InstallLocation}}; $apps = ($reg + $store) | Where-Object { $_.Path -match '^[CG]:' -or ($_.Path -eq $null -or $_.Path -eq '') } | Sort-Object Name | ForEach-Object { "- $($_.Name) [Path: $($_.Path)]" } | Out-String; Set-Clipboard -Value $apps; Write-Host "Successfully copied to clipboard! Open Notepad and press Ctrl+V." -ForegroundColor Green }
+
+<b># This command retrieves application names along with their versions.</b>
+& { $u = 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*','HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*','HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*'; $reg = Get-ItemProperty $u -EA SilentlyContinue | Where-Object { $_.DisplayName -and $_.SystemComponent -ne 1 -and $_.ParentKeyName -eq $null } | Select-Object @{N='Name';E={$_.DisplayName}}, @{N='Version';E={$_.DisplayVersion}}, @{N='Path';E={$_.InstallLocation}}; $store = Get-AppxPackage -AllUsers -EA SilentlyContinue | Where-Object { -not $_.IsFramework -and $_.NonRemovable -ne $true -and $_.SignatureKind -eq 'Store' } | Select-Object @{N='Name';E={$_.Name}}, @{N='Version';E={$_.Version}}, @{N='Path';E={$_.InstallLocation}}; $apps = ($reg + $store) | Where-Object { $_.Path -match '^[CG]:' -or ($_.Path -eq $null -or $_.Path -eq '') } | Sort-Object Name | ForEach-Object { if ($_.Version) { "- $($_.Name) (v$($_.Version))" } else { "- $($_.Name)" } } | Out-String; Set-Clipboard -Value $apps; Write-Host "Clean list with versions copied to clipboard! Open Notepad and press Ctrl+V." -ForegroundColor Green }
 </pre></code>
+<a href="https://docs.google.com/document/d/1IAlwsuKacNeb4RTXSQ_PkTDyeSWC_ktBCfXpkexSHOs/edit?usp=sharing">Windows Apps Installed by 20 Sep 2026</a>
 </div>
 
 </div>
