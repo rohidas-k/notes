@@ -776,8 +776,29 @@ You can start developing by editing the files inside the **app** directory. This
 </div>
 
 <div class="seperator">
-<h2 class="title">Backup Antigravity IDE Chat Archives</h2>
+<h2 class="title">Backup Chat Archives: PowerShell backup commands for both Claude and Google Antigravity</h2>
 Keep chat archives in a local backup directory or a dedicated private backup drive.
+<pre><code>$backupDir = "D:\Backups\AI_Chat_Archives\$(Get-Date -Format 'yyyy-MM-dd_HHmm')"
+New-Item -ItemType Directory -Path "$backupDir\claude" -Force | Out-Null
+New-Item -ItemType Directory -Path "$backupDir\antigravity" -Force | Out-Null
+
+# 1. Backup Claude Sessions & Projects
+if (Test-Path "$env:USERPROFILE\.claude\sessions") {
+    Copy-Item -Path "$env:USERPROFILE\.claude\sessions" -Destination "$backupDir\claude\" -Recurse -Force
+}
+if (Test-Path "$env:USERPROFILE\.claude\projects") {
+    Copy-Item -Path "$env:USERPROFILE\.claude\projects" -Destination "$backupDir\claude\" -Recurse -Force
+}
+
+# 2. Backup Antigravity Brain Transcripts
+if (Test-Path "$env:USERPROFILE\.gemini\antigravity-ide\brain") {
+    Copy-Item -Path "$env:USERPROFILE\.gemini\antigravity-ide\brain" -Destination "$backupDir\antigravity\" -Recurse -Force
+}
+
+Write-Host "✅ Backup completed at: $backupDir" -ForegroundColor Green
+</pre></code>
+
+Or a single line Antigravity chat history backup command to a specific directory:
 <pre><code>Copy-Item -Path "$env:USERPROFILE\.gemini\antigravity-ide\brain" -Destination "D:\Backups\AntigravityChats" -Recurse</pre></code>
 </div>
 
